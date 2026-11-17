@@ -1,0 +1,240 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="robots" content="noindex, nofollow, noarchive, noimageindex">
+  <meta name="googlebot" content="noindex, nofollow">
+  <meta name="theme-color" content="#FAF5EE">
+  <meta name="description" content="The royal wedding celebration of Bhavesh and Shivani — 01–02 December 2026, Indore, Madhya Pradesh.">
+  <title>Bhavesh Weds Shivani</title>
+
+  <!-- Only the font weights the page actually uses (was ~30 files, now ~12) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Alex+Brush&family=Cinzel:wght@600;700&family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=Great+Vibes&family=Marcellus&family=Playfair+Display:wght@600;700&display=swap">
+
+  <!-- Gate artwork is needed first; everything else loads after -->
+  <link rel="preload" as="image" href="assets/images/mahadev.webp">
+
+  <link rel="stylesheet" href="css/style.css">
+  <script defer src="js/config.js"></script>
+  <script defer src="js/app.js"></script>
+</head>
+
+<body class="is-locked">
+
+  <div class="wedding-toran-bar" aria-hidden="true"></div>
+
+  <!-- ================= ENTRY GATE ================= -->
+  <div class="enter-gate" id="enterGate" aria-label="Open royal wedding invitation">
+    <div class="gate-content">
+      <svg class="gate-corner gate-corner-tl" viewBox="0 0 32 32" fill="none" aria-hidden="true"><use href="#corner"/></svg>
+      <svg class="gate-corner gate-corner-tr" viewBox="0 0 32 32" fill="none" aria-hidden="true"><use href="#corner"/></svg>
+      <svg class="gate-corner gate-corner-bl" viewBox="0 0 32 32" fill="none" aria-hidden="true"><use href="#corner"/></svg>
+      <svg class="gate-corner gate-corner-br" viewBox="0 0 32 32" fill="none" aria-hidden="true"><use href="#corner"/></svg>
+
+      <div class="royal-auspicious-shloka">॥ श्री गणेशाय नमः ॥</div>
+      <p class="gate-kicker" id="gateKicker">A promise made.<br>A forever awaited.</p>
+      <div class="gate-seal" aria-hidden="true">
+        <img class="gate-logo" src="assets/images/mahadev.webp" alt="" width="130" height="130" fetchpriority="high">
+      </div>
+      <h1 class="gate-title" id="gateTitle"><span>Bhavesh</span><em>&amp;</em><span>Shivani</span></h1>
+      <p class="gate-forever" id="gateForever">Invite you to witness the beginning of their forever.</p>
+      <button class="hashtag-enter" id="enterButton" type="button">
+        <strong id="gateHashtag">#BhaveshWedsShivani</strong>
+        <span>✦ Tap to enter the Royal Celebration ✦</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- shared SVG symbols -->
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+    <defs>
+      <symbol id="corner" viewBox="0 0 32 32">
+        <path d="M2 30V10C2 5.57857 5.57857 2 10 2H30" stroke="currentColor" stroke-width="2" fill="none"/>
+        <path d="M6 30V12C6 8.68629 8.68629 6 12 6H30" stroke="currentColor" stroke-width="1" stroke-dasharray="2 2" fill="none"/>
+        <circle cx="10" cy="10" r="3" fill="currentColor"/>
+      </symbol>
+      <clipPath id="heartClip" clipPathUnits="objectBoundingBox">
+        <path d="M0.5,0.95 C0.5,0.95 0.03,0.62 0.03,0.31 C0.03,0.13 0.16,0.03 0.31,0.03 C0.41,0.03 0.47,0.09 0.5,0.16 C0.53,0.09 0.59,0.03 0.69,0.03 C0.84,0.03 0.97,0.13 0.97,0.31 C0.97,0.62 0.5,0.95 0.5,0.95 Z"/>
+      </clipPath>
+    </defs>
+  </svg>
+
+  <div class="petals" id="petals" aria-hidden="true"></div>
+
+  <!-- ================= FIREWORKS + MUSIC ================= -->
+  <canvas class="fireworks-canvas" id="fireworksCanvas" aria-hidden="true"></canvas>
+  <button class="firework-button" id="fireworkButton" type="button" aria-label="Launch celebration fireworks">
+    <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+      <path d="M12 2v4M12 18v4M4.9 4.9l2.8 2.8M16.3 16.3l2.8 2.8M2 12h4M18 12h4M4.9 19.1l2.8-2.8M16.3 7.7l2.8-2.8" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/>
+      <circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="1.7"/>
+    </svg>
+    <span>Fireworks</span>
+  </button>
+  <span class="sr-only" id="fireworkStatus" aria-live="polite"></span>
+
+  <audio id="bgMusic" src="assets/audio/music.mp3" loop preload="none"></audio>
+  <button class="music-button is-muted" id="musicButton" type="button" aria-pressed="false" aria-label="Turn wedding music on or off">
+    <svg class="music-on" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+      <path d="M9 18V6l10-2v12" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
+      <circle cx="6.5" cy="18" r="2.5" stroke="currentColor" stroke-width="1.7"/>
+      <circle cx="16.5" cy="16" r="2.5" stroke="currentColor" stroke-width="1.7"/>
+    </svg>
+    <svg class="music-off" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+      <path d="M9 18V6l10-2v12" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
+      <circle cx="6.5" cy="18" r="2.5" stroke="currentColor" stroke-width="1.7"/>
+      <circle cx="16.5" cy="16" r="2.5" stroke="currentColor" stroke-width="1.7"/>
+      <path d="M3 3l18 18" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/>
+    </svg>
+    <span id="musicLabel">Music off</span>
+  </button>
+
+  <!-- ================= NAV ================= -->
+  <nav class="site-nav" aria-label="Wedding navigation">
+    <a class="nav-mark" href="#home">
+      <span class="nav-monogram"><img class="nav-logo" src="assets/images/mahadev.webp" alt="" width="28" height="28"></span>
+      <span class="nav-names-wrap">
+        <b id="navNames">Bhavesh &amp; Shivani</b>
+        <span class="nav-sub">Shubh Vivah</span>
+      </span>
+    </a>
+    <div class="nav-links">
+      <a href="#film">Our Film</a>
+      <a href="#events">Functions</a>
+      <a href="#venue">Venue</a>
+      <a class="nav-rsvp" href="#rsvp">RSVP</a>
+    </div>
+  </nav>
+
+  <main>
+    <!-- ================= FILM ================= -->
+    <section class="banner" id="film" aria-label="Bhavesh and Shivani wedding film">
+      <!-- preload="none": the film downloads only after the guest taps Enter.
+           app.js picks film-wide.mp4 (1920x1080) on laptops/landscape screens,
+           film-720.mp4 (vertical) on phones. -->
+      <video id="bannerVideo" class="banner-video" playsinline webkit-playsinline muted preload="none"
+        poster="assets/video/poster.jpg" src="assets/video/film-720.mp4"
+        data-src-wide="assets/video/film-wide.mp4" data-poster-wide="assets/video/poster-wide.jpg"
+        disablepictureinpicture></video>
+
+      <div class="banner-label">Tap to play our film</div>
+
+      <div class="banner-copy">
+        <div class="banner-caption" data-start="0.38" data-end="0.98">
+          <p class="fw-lead" id="filmLead">Yashahsvi</p>
+          <h2 class="fw-name" id="filmGroomName">Bhavesh</h2>
+          <p class="fw-rel" id="filmGroomRelation">Grand son of</p>
+          <p class="fw-parents" id="filmGroomParents">Smt. Champa &amp; Shri Inderlal Tharani · Son of Smt. Komal &amp; Shri Santosh Tharani</p>
+          <p class="fw-with">with</p>
+          <h2 class="fw-name" id="filmBrideName">Shivani</h2>
+          <p class="fw-rel" id="filmBrideRelation">Grand daughter of</p>
+          <p class="fw-parents" id="filmBrideParents">Late Smt. Nirmala Devi &amp; Late Shri Thakur Das Veerwani · Daughter of Smt. Soniya &amp; Shri Rajkumar Veerwani</p>
+        </div>
+      </div>
+
+      <div class="banner-progress"><span id="bannerProgress"></span></div>
+      <div class="banner-percent" id="bannerPercent">00</div>
+
+      <button class="banner-play" id="bannerPlay" type="button">
+        <i aria-hidden="true"></i><span id="bannerPlayText">Play</span>
+      </button>
+      <button class="banner-scroll-hint" id="bannerScrollHint" type="button" aria-label="Scroll to view the invitation">
+        <i aria-hidden="true"></i><span>Scroll</span>
+      </button>
+    </section>
+
+    <!-- ================= RIBBON ================= -->
+    <div class="ribbon" aria-hidden="true">
+      <div class="ribbon-track" id="ribbonTrack"></div>
+    </div>
+
+    <!-- ================= SAVE THE DATE ================= -->
+    <section class="hero" id="home">
+      <div class="hero-grid">
+        <div class="hero-copy reveal">
+          <h2 class="display hero-scratch-title">Save the <em>Date</em></h2>
+          <div class="scratch-wrap" id="scratchWrap">
+            <div class="scratch-stage" id="scratchStage">
+              <div class="scratch-reveal">
+                <div class="date-badge">
+                  <span class="db-side" id="scratchYear">2026</span>
+                  <span class="db-main"><b id="scratchMonth">Dec</b><i id="scratchDay">2</i></span>
+                  <span class="db-side" id="scratchDow">Wed</span>
+                </div>
+              </div>
+              <canvas id="scratchCanvas" aria-label="Scratch to reveal the date"></canvas>
+            </div>
+            <button class="scratch-reset" id="scratchReset" type="button">Scratch again</button>
+          </div>
+          <p class="countdown-label">Countdown to the Royal Wedding</p>
+          <div class="countdown" id="countdown" aria-label="Wedding countdown">
+            <div class="count-unit"><b id="days">00</b><span>Days</span></div>
+            <div class="count-unit"><b id="hours">00</b><span>Hours</span></div>
+            <div class="count-unit"><b id="minutes">00</b><span>Mins</span></div>
+            <div class="count-unit"><b id="seconds">00</b><span>Secs</span></div>
+          </div>
+        </div>
+      </div>
+      <div class="scroll-cue"><i aria-hidden="true"></i><span>Scroll into our story</span></div>
+    </section>
+
+    <!-- ================= FUNCTIONS ================= -->
+    <section class="events" id="events">
+      <div class="events-heading reveal">
+        <h2 class="display">The wedding <em>celebrations</em></h2>
+        <div class="slide-hint">Scroll to stack the next function <span></span></div>
+      </div>
+      <div class="event-stack" id="eventStack"></div>
+    </section>
+
+    <!-- ================= VENUE / RSVP ================= -->
+    <section class="venue" id="venue">
+      <div class="venue-inner" id="rsvp">
+        <div class="venue-card reveal">
+          <div class="rsvp-logo-wrap">
+            <img src="assets/images/mahadev.webp" alt="Bhavesh &amp; Shivani" class="rsvp-logo-img" width="90" height="90" loading="lazy">
+          </div>
+
+          <div class="invitation-content">
+            <h3 class="main-heading">Requesting your presence</h3>
+            <div class="family-names">
+              <p>Smt. Kanchan &amp; Shri. Sunil Pahuja</p>
+              <p>Smt. Roma &amp; Shri. Kailash Keswani</p>
+              <p>Smt. Kareena &amp; Amit Vaswani</p>
+              <p>Smt. Lata Chawla &amp; Son Shri Darpan Chawla</p>
+              <p>Smt. Pinky &amp; Kamlesh Gehani</p>
+              <p>Smt. Deepa &amp; Shri. Vishal Jain</p>
+            </div>
+            <div class="guest-names">
+              <p>Gaurav, Vaani, Hetal, Aanshika, Saransh, Ishika,</p>
+              <p>Vanshita, Yashi, Khushi</p>
+            </div>
+            <h3 class="rsvp">RSVP</h3>
+            <p class="rsvp-message">We cordially await your gracious presence. Kindly favour<br>us with your response</p>
+            <div class="business-names">
+              <p>Santosh Auto &amp; Hardware Stores</p>
+              <p>BS Agrotech</p>
+            </div>
+          </div>
+
+          <div class="whatsapp-card">
+            <div><small id="contactLabel">contact details</small><b id="rsvpNumber">+919252184274</b></div>
+            <a id="rsvpWhatsappLink" href="https://wa.me/919252184274" target="_blank" rel="noopener" aria-label="RSVP on WhatsApp">
+              <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M20.5 11.7a8.5 8.5 0 0 1-12.6 7.4L3.5 20.5l1.4-4.2a8.5 8.5 0 1 1 15.6-4.6Z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/>
+                <path d="M8.2 7.7c.3-.5.6-.5.9-.5h.5c.2 0 .4.1.5.4l.7 1.7c.1.3 0 .5-.2.7l-.6.7c-.2.2-.1.4 0 .6.5.9 1.2 1.7 2.1 2.2.3.2.5.2.7 0l.8-1c.2-.2.4-.3.7-.2l1.8.8c.3.1.5.3.5.5 0 .3-.1 1.2-.7 1.7-.5.5-1.3.8-2.2.6-1-.2-2.8-.9-4.6-2.5-2.3-2-3-4.3-3.1-5.1 0-.4.1-.6.2-.8Z" fill="currentColor"/>
+              </svg>
+            </a>
+          </div>
+        </div>
+      </div>
+      <div class="footer-line">
+        <span id="footerNamesDate">Bhavesh &amp; Shivani ✦ December 2026</span>
+        <span>Made with love for one beautiful beginning</span>
+      </div>
+    </section>
+  </main>
+</body>
+</html>
