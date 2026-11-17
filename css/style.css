@@ -429,6 +429,14 @@ body.film-playing .petal { animation-play-state: paused; }
 }
 /* While the names are on screen, drop the button to the bottom edge so it never covers them */
 .banner.has-caption .banner-play { bottom: max(22px, calc(env(safe-area-inset-bottom) + 14px)); }
+/* loading state: play triangle becomes a spinning ring */
+.banner-play.is-loading i::before {
+  margin: 0; width: 18px; height: 18px;
+  border: 2.5px solid rgba(58, 20, 24, .25); border-top-color: #3a1418; border-radius: 50%;
+  animation: film-spin .8s linear infinite;
+}
+.banner-play.is-loading i::after { animation: none; opacity: 0; }
+@keyframes film-spin { to { transform: rotate(360deg); } }
 .banner-play.is-hidden { opacity: 0; pointer-events: none; transform: translate(-50%, 12px); }
 .banner-play.is-hidden i::after { animation: none; }
 .banner-play:focus-visible, .banner-scroll-hint:focus-visible { outline: 2px solid #ffd9a1; outline-offset: 4px; }

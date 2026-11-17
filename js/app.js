@@ -312,17 +312,69 @@
     function loop() { update(); raf = requestAnimationFrame(loop); }
     function stopLoop() { cancelAnimationFrame(raf); raf = 0; update(); }
 
-    function start() {
-      if (video.ended) video.currentTime = 0;
-      hint.classList.remove('is-visible');
+    /* ---- Loading: download the whole film once, then play it from memory ----
+       Partial streaming can freeze mid-scene on slow mobile data. Downloading the film
+       in full (it starts the moment the guest taps Enter) guarantees smooth playback. */
+    let waitingToStart = false, blobReady = false, fetchFailed = false, loadPct = 0;
+    const filmUrl = video.getAttribute('src') && video.src;  // chosen file (wide or vertical)
+
+    function setLoading(on) {
+      playBtn.classList.toggle('is-loading', on);
+      if (on) setButton(loadPct ? `Loading ${loadPct}%` : 'Loading', false);
+    }
+    function reallyPlay() {
+      waitingToStart = false;
+      setLoading(false);
       video.playbackRate = SPEED;
       const p = video.play();
       if (p && p.catch) p.catch(() => setButton('Play', false));
     }
+    function start() {
+      if (video.ended) video.currentTime = 0;
+      hint.classList.remove('is-visible');
+      warm();
+      if (blobReady || fetchFailed) return reallyPlay();
+      waitingToStart = true;
+      setLoading(true);
+    }
+
+    function warm() {
+      if (preloaded) return;
+      preloaded = true;
+      if (!window.fetch || !window.ReadableStream) { fetchFailed = true; video.preload = 'auto'; return; }
+      video.removeAttribute('src'); video.load();   // don't download twice
+      fetch(filmUrl).then(async res => {
+        if (!res.ok || !res.body) throw new Error('fetch');
+        const total = +res.headers.get('content-length') || 0;
+        const reader = res.body.getReader(), parts = [];
+        let got = 0;
+        for (;;) {
+          const { done, value } = await reader.read();
+          if (done) break;
+          parts.push(value); got += value.length;
+          if (total) {
+            const p = Math.min(99, Math.floor(got / total * 100));
+            if (p !== loadPct) { loadPct = p; if (waitingToStart) setLoading(true); }
+          }
+        }
+        video.src = URL.createObjectURL(new Blob(parts, { type: 'video/mp4' }));
+        video.load();
+        blobReady = true;
+        if (waitingToStart) video.addEventListener('canplay', reallyPlay, { once: true });
+      }).catch(() => {
+        // e.g. opened from a file on disk — fall back to normal streaming
+        fetchFailed = true;
+        video.src = filmUrl; video.preload = 'auto'; video.load();
+        if (waitingToStart) reallyPlay();
+      });
+    }
+
+    video.addEventListener('playing', () => { setLoading(false); setButton('', true); });
 
     // Tap anywhere on the film (video, "Tap to play our film" label, captions) to play / pause
     section.addEventListener('click', e => {
       if (e.target.closest('#bannerScrollHint')) return;
+      if (waitingToStart) return;
       if (video.paused || video.ended) start(); else video.pause();
     });
 
@@ -338,7 +390,7 @@
       body.classList.remove('film-playing');
       if (video.ended) return;
       section.classList.remove('is-playing');
-      setButton('Continue', false);
+      if (!waitingToStart) setButton('Continue', false);
     });
     video.addEventListener('ended', () => {
       stopLoop();
@@ -358,21 +410,6 @@
       if (!e.isIntersecting && !video.paused) video.pause();
     }, { threshold: 0 }).observe(section);
 
-    // Once the guest enters, download the whole film into memory so playback
-    // never stalls waiting for the network mid-scene.
-    function warm() {
-      video.preload = 'auto';
-      if (preloaded || !window.fetch) return;
-      preloaded = true;
-      fetch(video.currentSrc || video.src)
-        .then(r => (r.ok ? r.blob() : Promise.reject()))
-        .then(blob => {
-          if (!video.paused || video.currentTime > 0) return; // already playing the stream — leave it
-          video.src = URL.createObjectURL(blob);
-          video.load();
-        })
-        .catch(() => {});
-    }
     return { warm, start };
   })();
 
